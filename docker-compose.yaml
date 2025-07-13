@@ -1,0 +1,52 @@
+services:
+  db:
+    container_name: task-manager-postgresql
+    image: postgres:16
+
+    ports:
+      - "5432:5432"
+
+    environment:
+      POSTGRES_USER: ${DB_LOGIN}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    networks:
+      - task-manager_net
+    restart: unless-stopped
+
+  app:
+    container_name: tasl-manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "80:${API_PORT}"
+
+    environment:
+      API_HOST: ${API_HOST}
+      API_PORT: ${API_PORT}
+
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_LOGIN: ${DB_LOGIN}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+
+    depends_on:
+      - db
+
+    networks:
+      - task-manager_net
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  task-manager_net:
+    driver: bridge
