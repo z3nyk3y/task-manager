@@ -1,4 +1,4 @@
-module gitlab.com/eightlix-group/task-manager
+module github.com/z3nyk3y/task-manager
 
 go 1.24.4
 

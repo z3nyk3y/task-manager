@@ -3,7 +3,7 @@ package task
 import (
 	"context"
 
-	"gitlab.com/eightlix-group/task-manager/internal/models"
+	"github.com/z3nyk3y/task-manager/internal/models"
 )
 
 func (r *Repo) GetTasks(ctx context.Context) ([]models.Task, error) {

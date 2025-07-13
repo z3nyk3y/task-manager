@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"gitlab.com/eightlix-group/task-manager/internal/handler"
-	"gitlab.com/eightlix-group/task-manager/internal/repo/postgresql"
-	"gitlab.com/eightlix-group/task-manager/internal/service"
+	"github.com/z3nyk3y/task-manager/internal/handler"
+	"github.com/z3nyk3y/task-manager/internal/repo/postgresql"
+	"github.com/z3nyk3y/task-manager/internal/service"
 	"go.uber.org/zap"
 )
 

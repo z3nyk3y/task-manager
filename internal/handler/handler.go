@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.com/eightlix-group/task-manager/internal/service"
+	"github.com/z3nyk3y/task-manager/internal/service"
 
 	"github.com/labstack/echo/v4"
 )

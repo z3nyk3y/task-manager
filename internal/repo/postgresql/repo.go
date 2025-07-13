@@ -1,7 +1,7 @@
 package postgresql
 
 import (
-	"gitlab.com/eightlix-group/task-manager/internal/repo/postgresql/task"
+	"github.com/z3nyk3y/task-manager/internal/repo/postgresql/task"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

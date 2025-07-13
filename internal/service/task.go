@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"gitlab.com/eightlix-group/task-manager/internal/models"
+	"github.com/z3nyk3y/task-manager/internal/models"
 )
 
 type taskRepo interface {
