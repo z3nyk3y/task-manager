@@ -8,7 +8,7 @@ RUN go mod download && go mod verify
 COPY ./cmd ./cmd
 COPY ./internal ./internal
 
-RUN go build cmd/main.go
+RUN go build cmd/app/main.go
 
 FROM alpine
 
