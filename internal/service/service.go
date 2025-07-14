@@ -1,15 +1,17 @@
 package service
 
+import "github.com/z3nyk3y/task-manager/pkg/workerpool"
+
 type Service struct {
-	Task
+	TaskService
 }
 
 type Repo struct {
 	TaskRepo taskRepo
 }
 
-func NewService(repos Repo) *Service {
+func NewService(repos Repo, workerPool *workerpool.WorkerPool) *Service {
 	return &Service{
-		Task: *NewTaskService(repos.TaskRepo),
+		TaskService: *NewTaskService(repos.TaskRepo, workerPool),
 	}
 }

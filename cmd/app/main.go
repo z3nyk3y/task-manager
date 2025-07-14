@@ -10,6 +10,7 @@ import (
 	"github.com/z3nyk3y/task-manager/internal/handler"
 	"github.com/z3nyk3y/task-manager/internal/repo/postgresql"
 	"github.com/z3nyk3y/task-manager/internal/service"
+	"github.com/z3nyk3y/task-manager/pkg/workerpool"
 	"go.uber.org/zap"
 )
 
@@ -59,9 +60,17 @@ func StartTaskManager(ctx context.Context) error {
 
 	repo := postgresql.NewRepository(pool)
 
-	services := service.NewService(service.Repo{
-		TaskRepo: repo.Task,
-	})
+	wp, err := workerpool.New(ctx, 100, 100)
+	if err != nil {
+		log.Fatalf("unable to create worker pool %s", err.Error())
+	}
+
+	services := service.NewService(
+		service.Repo{
+			TaskRepo: repo.Task,
+		},
+		wp,
+	)
 
 	handlers := handler.NewHandler(services)
 

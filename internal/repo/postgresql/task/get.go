@@ -6,6 +6,6 @@ import (
 	"github.com/z3nyk3y/task-manager/internal/models"
 )
 
-func (r *Repo) GetTasks(ctx context.Context) ([]models.Task, error) {
+func (r *Repo) FetchTasks(ctx context.Context, numberOfTasks int) ([]models.Task, error) {
 	return nil, nil
 }
