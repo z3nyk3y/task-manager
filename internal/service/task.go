@@ -26,7 +26,7 @@ func NewTaskService(repo taskRepo, workerPool *workerpool.WorkerPool) *TaskServi
 	return &TaskService{repo: repo, workerPool: workerPool}
 }
 
-func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks int, processTimeMin, processTimeMax int64, sucessProbability int) error {
+func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processTimeMinimum, processTimeMax int, sucessProbability int) error {
 	logger := zap.L()
 
 	tasks, err := ts.repo.FetchTasks(ctx, numberOfTasks)
@@ -51,8 +51,8 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks int, proc
 
 		var taskStatus models.TaskStatus
 
-		processTimeMin := processTimeMin
-		processTimeMax := processTimeMax
+		processTimeMinimum := int64(processTimeMinimum)
+		processTimeMax := int64(processTimeMax)
 
 		err := ts.workerPool.AddJob(func() {
 			defer wg.Done()
@@ -65,9 +65,9 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks int, proc
 				taskStatus = models.New
 			}
 
-			delta := processTimeMax - processTimeMin
+			delta := processTimeMax - processTimeMinimum
 
-			time.Sleep(time.Duration(processTimeMin+rand.Int63n(delta)) * time.Millisecond)
+			time.Sleep(time.Duration(processTimeMinimum+rand.Int63n(delta)) * time.Millisecond)
 
 			task.Status = taskStatus
 			resultCh <- task
