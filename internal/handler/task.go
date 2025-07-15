@@ -10,10 +10,10 @@ import (
 )
 
 type TaskRequest struct {
-	NumberOfTasks     int `json:"number_of_tasks"`
-	ProcessTimeMinimum    int `json:"process_time_min"`
-	ProcessTimeMax    int `json:"process_time_max"`
-	SucessProbability int `json:"sucess_probability"`
+	NumberOfTasks      int `json:"number_of_tasks"`
+	ProcessTimeMinimum int `json:"process_time_minimum"`
+	ProcessTimeMax     int `json:"process_time_max"`
+	SucessProbability  int `json:"sucess_probability"`
 }
 
 func (h *Handler) TaskHandler(c echo.Context) error {
@@ -53,7 +53,7 @@ func validateTaskRequest(taskRequest TaskRequest) error {
 	}
 
 	if taskRequest.ProcessTimeMinimum > taskRequest.ProcessTimeMax {
-		return errors.New("process_time_min must be less than process_time_max or they must be equal")
+		return errors.New("process_time_minimum must be less than process_time_max or they must be equal")
 	}
 
 	if taskRequest.SucessProbability < 0 || taskRequest.SucessProbability > 100 {

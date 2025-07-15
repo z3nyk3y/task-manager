@@ -23,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # args:
+      #   ENABLE_RACE: "true"
 
     ports:
       - "80:${API_PORT}"
