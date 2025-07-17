@@ -19,6 +19,6 @@ make migrations-apply
 ## Сброс базы данных
 
 ```
-migrations-rollback
+make migrations-rollback
 make migrations-apply
 ```
