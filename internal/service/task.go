@@ -55,7 +55,6 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processT
 		processTimeMinimum := int64(processTimeMinimum)
 		processTimeMax := int64(processTimeMax)
 		wg.Add(1)
-		logger.Info("increment wg")
 		err := ts.workerPool.AddJob(func() {
 			defer wg.Done()
 
