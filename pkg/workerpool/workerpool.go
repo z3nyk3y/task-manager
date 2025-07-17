@@ -29,13 +29,15 @@ func New(ctx context.Context, chanCapacity int, numberOfWorkers int) (*WorkerPoo
 func (wp *WorkerPool) process(ctx context.Context, numberOfWorkers int) {
 	for range numberOfWorkers {
 		go func() {
-			select {
-			case job := <-wp.Pipeline:
-				if job != nil {
-					job()
+			for {
+				select {
+				case job := <-wp.Pipeline:
+					if job != nil {
+						job()
+					}
+				case <-ctx.Done():
+					return
 				}
-			case <-ctx.Done():
-				return
 			}
 		}()
 	}

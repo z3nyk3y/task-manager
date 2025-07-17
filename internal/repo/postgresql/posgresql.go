@@ -16,7 +16,10 @@ type Config struct {
 }
 
 func NewPostgreSqlDB(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
-	pool, err := pgxpool.New(ctx, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?pool_max_conns=30&pool_min_conns=5", cfg.Login, cfg.Password, cfg.Host, cfg.Port, cfg.Name))
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?pool_max_conns=30&pool_min_conns=5&sslmode=disable",
+		cfg.Login, cfg.Password, cfg.Host, cfg.Port, cfg.Name)
+
+	pool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
 		return nil, err
 	}

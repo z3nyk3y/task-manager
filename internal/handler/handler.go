@@ -6,14 +6,16 @@ import (
 	"time"
 
 	"github.com/z3nyk3y/task-manager/internal/service"
+	"github.com/z3nyk3y/task-manager/pkg/workerpool"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type Handler struct {
-	router   *echo.Echo
-	services *service.Service
+	router     *echo.Echo
+	services   *service.Service
+	workerPool *workerpool.WorkerPool
 }
 
 type Config struct {
@@ -27,13 +29,11 @@ type Response struct {
 	Error  string `json:"error"`
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services, router: echo.New()}
+func NewHandler(services *service.Service, workerPool *workerpool.WorkerPool) *Handler {
+	return &Handler{services: services, router: echo.New(), workerPool: workerPool}
 }
 
-func (h *Handler) ListenAndServe(ctx context.Context, cfg Config) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+func (h *Handler) ListenAndServe(cfg Config) error {
 
 	h.router.Use(middleware.Secure())
 	h.router.Use(middleware.Recover())

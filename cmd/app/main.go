@@ -11,6 +11,7 @@ import (
 	"github.com/z3nyk3y/task-manager/internal/repo/postgresql"
 	"github.com/z3nyk3y/task-manager/internal/service"
 	"github.com/z3nyk3y/task-manager/pkg/workerpool"
+
 	"go.uber.org/zap"
 )
 
@@ -70,9 +71,10 @@ func StartTaskManager(ctx context.Context) error {
 			TaskRepo: repo.Task,
 		},
 		wp,
+		60,
 	)
 
-	handlers := handler.NewHandler(services)
+	handlers := handler.NewHandler(services, wp)
 
 	handlersCfg := handler.Config{
 		Host: os.Getenv(apiHost),
@@ -82,14 +84,14 @@ func StartTaskManager(ctx context.Context) error {
 	go func() {
 		defer cancel()
 
-		err := handlers.ListenAndServe(ctx, handlersCfg)
+		err := handlers.ListenAndServe(handlersCfg)
 		if err != nil {
 			logger.Error("error starting up server", zap.Error(err))
 		}
 	}()
 
 	<-ctx.Done()
-	logger.Info("shutting down server in porgress")
+	logger.Info("shutting down server in progress")
 
 	err = handlers.ShutDown()
 	if err != nil {

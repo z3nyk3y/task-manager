@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -17,7 +18,7 @@ type TaskRequest struct {
 }
 
 func (h *Handler) TaskHandler(c echo.Context) error {
-	ctx := c.Request().Context()
+	ctx := context.Background()
 	logger := zap.L()
 
 	var taskRequest TaskRequest
@@ -32,9 +33,11 @@ func (h *Handler) TaskHandler(c echo.Context) error {
 		return h.sendResponse(c, http.StatusBadRequest, "", err.Error())
 	}
 
-	err = h.services.TaskService.ProcessTasks(ctx, taskRequest.NumberOfTasks, taskRequest.ProcessTimeMinimum, taskRequest.ProcessTimeMax, taskRequest.SucessProbability)
+	err = h.workerPool.AddJob(func() {
+		h.services.TaskService.ProcessTasks(ctx, taskRequest.NumberOfTasks, taskRequest.ProcessTimeMinimum, taskRequest.ProcessTimeMax, taskRequest.SucessProbability)
+	})
 	if err != nil {
-		return h.sendResponse(c, http.StatusInternalServerError, "", "server error")
+		return h.sendResponse(c, http.StatusBadGateway, "", "server is busy")
 	}
 
 	return h.sendResponse(c, http.StatusNoContent, "", "")
@@ -46,7 +49,7 @@ func validateTaskRequest(taskRequest TaskRequest) error {
 	}
 
 	if taskRequest.ProcessTimeMinimum <= 0 {
-		return errors.New("process_time_min must be grater than 0")
+		return errors.New("process_time_minmum must be grater than 0")
 	}
 	if taskRequest.ProcessTimeMax <= 0 {
 		return errors.New("process_time_max must be grater than 0")

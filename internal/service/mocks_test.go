@@ -162,3 +162,66 @@ func (_c *mocktaskRepo_UpdateTask_Call) RunAndReturn(run func(ctx context.Contex
 	_c.Call.Return(run)
 	return _c
 }
+
+// UpdateTasksStatus provides a mock function for the type mocktaskRepo
+func (_mock *mocktaskRepo) UpdateTasksStatus(ctx context.Context, task []models.Task, status models.TaskStatus) error {
+	ret := _mock.Called(ctx, task, status)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateTasksStatus")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, []models.Task, models.TaskStatus) error); ok {
+		r0 = returnFunc(ctx, task, status)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// mocktaskRepo_UpdateTasksStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateTasksStatus'
+type mocktaskRepo_UpdateTasksStatus_Call struct {
+	*mock.Call
+}
+
+// UpdateTasksStatus is a helper method to define mock.On call
+//   - ctx context.Context
+//   - task []models.Task
+//   - status models.TaskStatus
+func (_e *mocktaskRepo_Expecter) UpdateTasksStatus(ctx interface{}, task interface{}, status interface{}) *mocktaskRepo_UpdateTasksStatus_Call {
+	return &mocktaskRepo_UpdateTasksStatus_Call{Call: _e.mock.On("UpdateTasksStatus", ctx, task, status)}
+}
+
+func (_c *mocktaskRepo_UpdateTasksStatus_Call) Run(run func(ctx context.Context, task []models.Task, status models.TaskStatus)) *mocktaskRepo_UpdateTasksStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 []models.Task
+		if args[1] != nil {
+			arg1 = args[1].([]models.Task)
+		}
+		var arg2 models.TaskStatus
+		if args[2] != nil {
+			arg2 = args[2].(models.TaskStatus)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *mocktaskRepo_UpdateTasksStatus_Call) Return(err error) *mocktaskRepo_UpdateTasksStatus_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *mocktaskRepo_UpdateTasksStatus_Call) RunAndReturn(run func(ctx context.Context, task []models.Task, status models.TaskStatus) error) *mocktaskRepo_UpdateTasksStatus_Call {
+	_c.Call.Return(run)
+	return _c
+}

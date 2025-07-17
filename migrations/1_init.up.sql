@@ -9,8 +9,8 @@ VALUES ('NEW'), ('PROCESSING'), ('PROCESSED');
 CREATE TABLE public.tasks (
 	id serial8 PRIMARY KEY,
 	status_id varchar(10) REFERENCES dict_task_status(id),
-	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()

@@ -9,6 +9,7 @@ import (
 
 	"github.com/z3nyk3y/task-manager/internal/models"
 	"github.com/z3nyk3y/task-manager/pkg/workerpool"
+
 	"go.uber.org/zap"
 )
 
@@ -20,32 +21,32 @@ type taskRepo interface {
 type TaskService struct {
 	repo       taskRepo
 	workerPool *workerpool.WorkerPool
+	deadline   int
 }
 
-func NewTaskService(repo taskRepo, workerPool *workerpool.WorkerPool) *TaskService {
-	return &TaskService{repo: repo, workerPool: workerPool}
+func NewTaskService(repo taskRepo, workerPool *workerpool.WorkerPool, deadline int) *TaskService {
+	return &TaskService{repo: repo, workerPool: workerPool, deadline: deadline}
 }
 
-func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processTimeMinimum, processTimeMax int, sucessProbability int) error {
+func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processTimeMinimum, processTimeMax int, sucessProbability int) {
 	logger := zap.L()
 
 	tasks, err := ts.repo.FetchTasks(ctx, numberOfTasks)
 	if err != nil {
-		return err
+		logger.Info("unable to fetch tasks", zap.Error(err))
+		return
 	}
-
-	var test bool
-	logger.Info(fmt.Sprintf("test %v", test))
 
 	logger.Info(fmt.Sprintf("proccess tasks %v", tasks))
 
 	resultCh := make(chan models.Task, numberOfTasks)
 
 	var wg sync.WaitGroup
-	wg.Add(numberOfTasks)
 
 	for _, task := range tasks {
-		// task := task
+		task := task
+
+		deadline := time.NewTicker(time.Duration(ts.deadline) * time.Second)
 
 		p := float64(sucessProbability) / 100.0
 
@@ -53,11 +54,10 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processT
 
 		processTimeMinimum := int64(processTimeMinimum)
 		processTimeMax := int64(processTimeMax)
-
+		wg.Add(1)
+		logger.Info("increment wg")
 		err := ts.workerPool.AddJob(func() {
 			defer wg.Done()
-
-			test = true
 
 			if rand.Float64() < p {
 				taskStatus = models.Processed
@@ -67,13 +67,38 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processT
 
 			delta := processTimeMax - processTimeMinimum
 
-			time.Sleep(time.Duration(processTimeMinimum+rand.Int63n(delta)) * time.Millisecond)
+			var taskTime int64
+
+			if delta == 0 {
+				taskTime = processTimeMinimum
+			} else {
+				taskTime = processTimeMinimum + rand.Int63n(delta)
+			}
+
+			for taskTime >= 0 {
+				select {
+				case <-deadline.C:
+					logger.Info(fmt.Sprintf("deadline excedeed for task %d, setting status to %s", task.Id, models.New))
+					task.Status = models.New
+					return
+				default:
+					time.Sleep(time.Duration(10 * time.Millisecond))
+					taskTime -= 10
+				}
+			}
 
 			task.Status = taskStatus
 			resultCh <- task
 		})
 		if err != nil {
-			return err
+			wg.Done()
+			task.Status = models.New
+			err := ts.repo.UpdateTask(ctx, task)
+			if err != nil {
+				logger.Error("error restore task status", zap.Int64("Id", task.Id), zap.String("Status", string(task.Status)))
+			} else {
+				logger.Info(fmt.Sprintf("chan is full; restored task %d with status %s", task.Id, task.Status))
+			}
 		}
 	}
 
@@ -92,7 +117,6 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processT
 		}
 	}
 
-	return nil
 }
 
 func randTime(start, end time.Time) time.Time {
