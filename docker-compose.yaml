@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   app:
-    container_name: tasl-manager
+    container_name: task-manager
     build:
       context: .
       dockerfile: Dockerfile
