@@ -7,8 +7,11 @@ up: ## up task-manager and database in deamon.
 up-no-detached: ## up task-manager and database and do not detache from std out.
 	docker compose up
 
+down: ## shut down and remove containers.
+	docker compose down
+
 build-app: ## build app
-	docker compose build app
+	docker compose up app --build -d
 
 migrations-apply: ## applies migration. Use MGR_NUM_UP in .env file to configurate how many migrations need to apply. Defaullt all migrations will be set.
 	docker run --rm --name task-manager-migrator -v ./migrations:/migrations --network task-manager_task-manager_net migrate/migrate:4 \

@@ -5,9 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"go.uber.org/zap"
-
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 type TaskRequest struct {
@@ -48,11 +47,11 @@ func validateTaskRequest(taskRequest TaskRequest) error {
 		return errors.New("number_of_tasks must be grater than 0")
 	}
 
-	if taskRequest.ProcessTimeMinimum <= 0 {
-		return errors.New("process_time_minmum must be grater than 0")
+	if taskRequest.ProcessTimeMinimum < 0 {
+		return errors.New("process_time_minmum must be non negative")
 	}
-	if taskRequest.ProcessTimeMax <= 0 {
-		return errors.New("process_time_max must be grater than 0")
+	if taskRequest.ProcessTimeMax < 0 {
+		return errors.New("process_time_max must be non negative")
 	}
 
 	if taskRequest.ProcessTimeMinimum > taskRequest.ProcessTimeMax {

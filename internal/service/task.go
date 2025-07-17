@@ -81,7 +81,11 @@ func (ts *TaskService) ProcessTasks(ctx context.Context, numberOfTasks, processT
 					task.Status = models.New
 					return
 				default:
-					time.Sleep(time.Duration(10 * time.Millisecond))
+					if taskTime < 10 {
+						time.Sleep(time.Duration(time.Duration(taskTime) * time.Millisecond))
+					} else {
+						time.Sleep(time.Duration(10 * time.Millisecond))
+					}
 					taskTime -= 10
 				}
 			}

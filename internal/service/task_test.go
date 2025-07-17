@@ -97,4 +97,14 @@ var tests = []struct {
 
 		isError: true,
 	},
+	{
+		name: "no time slee",
+
+		numberOfTasks:     10,
+		processTimeMin:    0,
+		processTimeMax:    0,
+		sucessProbability: 100,
+
+		isError: true,
+	},
 }
